@@ -6,11 +6,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WaterCounter(modifier: Modifier = Modifier) {
+fun StatelessCounter(count: Int, onIncrement: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(16.dp)) {
         //UI won't recompose
 //        var count = 0
@@ -35,28 +36,27 @@ fun WaterCounter(modifier: Modifier = Modifier) {
         Adding the delegate's getter and setter imports lets us read and mutate count indirectly
         without explicitly referring to the MutableState's value property every time.
          */
-        var count by remember { mutableStateOf(0) }
+        /*
+        Use rememberSaveable to restore your UI state after an Activity or process is recreated.
+        Besides retaining state across recompositions,
+        rememberSaveable also retains state across Activity and process recreation.
+         */
+
         if (count > 0) {
-            var showTask by remember {
-                mutableStateOf(true)
-            }
-            if (showTask) {
-                WellnessTaskItem(
-                    taskName = "Have you taken your 15 minute walk today?",
-                    onClose = { showTask = false })
-            }
             Text("You've had $count glasses.")
         }
-
-        Row(Modifier.padding(top = 8.dp)) {
-            Button(onClick = { count++ }, enabled = count < 10) {
-                Text("Add one")
-            }
-            Button(onClick = { count = 0 }, Modifier.padding(start = 8.dp)) {
-                Text(text = "Clear water count")
-            }
+        Button(onClick = onIncrement, Modifier.padding(top = 8.dp), enabled = count < 10) {
+            Text("Add one")
         }
-
-
     }
+}
+
+/*
+StatefulCounter owns the state. That means that it holds the count state
+and modifies it when calling the StatelessCounter function.
+ */
+@Composable
+fun StatefulCounter(modifier: Modifier = Modifier) {
+    var count by rememberSaveable { mutableStateOf(0) }
+    StatelessCounter(count, { count++ }, modifier)
 }
