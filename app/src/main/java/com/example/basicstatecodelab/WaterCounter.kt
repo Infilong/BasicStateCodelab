@@ -10,6 +10,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+//State Hoist https://developer.android.com/jetpack/compose/state#state-hoisting
+//By following unidirectional data flow, you can decouple composables
+//that display state in the UI from the parts of your app that store and change state.
 @Composable
 fun StatelessCounter(count: Int, onIncrement: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(16.dp)) {
